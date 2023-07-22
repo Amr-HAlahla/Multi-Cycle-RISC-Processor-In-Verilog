@@ -10,12 +10,14 @@ module instruction_memory(
 
     initial begin
         // Set instructions directly in the memory array
-        mem[0] = 32'h08CA0052; // addi $5, $3, 10  => 32'b00001(opcode)00011(rs1)00101(rd)00000000001010(immediate)01(type)0(stop) 
-        mem[1] = 32'h0955FFDA; // addi $10, $5, -5 => 32'b00001(opcode)00101(rs1)01010(rd)11111111111011(immediate)01(type)0(stop)
-        mem[2] = 32'h08861000; // add $3, $2, $1   => 32'b00001(opcode)00010(rs1)00011(rd)00001(rs2)000000000(unused)00(type)0(stop)
-        mem[3] = 32'h00C81000; // and $4, $3, $1   => 32'b00000(opcode)00011(rs1)00100(rd)00001(rs2)000000000(unused)00(type)0(stop) 
-        mem[4] = 32'h10CA4000; // sub $5, $3, $4   => 32'b00010(opcode)00011(rs1)00101(rd)00100(rs2)000000000(unused)00(type)0(stop) 
-        mem[5] = 32'h19060002; // SW $3, 0($4)     => 32'b00011(opcode)00100(rs1)00011(rd)00000000000000(imm)01(type)0(stop)    
-        //mem[6] = 32'h110C0002; // LW $6, 0($4)    => 32'b00010(opcode)00011(rs1)00110(rd)00000000000000(imm)01(type)0(stop) 
+        mem[0] = 32'h08CA0052; // addi $5, $3, 10  => R5 = R3 + 10 : R5 = 13 => 0x0000000D
+        mem[1] = 32'h0955FFDA; // addi $10, $5, -5 => R10 = R5 + (-5) : R10 = 8
+        mem[2] = 32'h08861000; // add $3, $2, $1   => R3 = R2 + R1 : R3 = 3 
+        mem[3] = 32'h00C81000; // and $4, $3, $1   => R4 = R3 & R1 : R4 = 1 
+        mem[4] = 32'h10CA4000; // sub $5, $3, $4   => R5 = R3 - R4 : R5 = 2
+        mem[5] = 32'h19060002; // SW $3, 0($4)     => Mem[1] = R3 : Mem[1] = 3   
+        mem[6] = 32'h00480106; //SLL R4, R1, 2 => R4 = R1 << 2 : R4 = 4
+        mem[7] = 32'h07FFFFEC; // J -3
+        //mem[7] = 32'hFFFFFEC; // JAL
     end
 endmodule
