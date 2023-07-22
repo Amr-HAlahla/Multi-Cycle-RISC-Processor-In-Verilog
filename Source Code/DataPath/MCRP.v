@@ -144,28 +144,29 @@ module MCRP(input clk,reset,
             state = next_state;
             case(state)
             IF: begin
-                next_pc <= pc + 32'h00000001; // increment the pc by 1
+                next_pc <= pc + 32'h00000001; // increment the pc by 1, next_pc = 7 => 8 
                 if (pc_src == 2'b00) begin
                     pc = next_pc;
                 end
                 else if (pc_src == 2'b01) begin
                     pc = BTA;
+                    next_pc <= BTA + 32'b00000001;
                 end
                 else if (pc_src == 2'b10) begin
-                    pc = JA;
-                    // sp = sp + 32'h00000001;
+                    pc = JA;  // pc = 4
+                    next_pc <= JA + 32'b00000001; // next_pc = 5
                 end
                 else if (pc_src == 2'b11) begin
                     pc = RA;
-                    // sp = sp - 32'h00000001;
+                    next_pc <= RA + 32'b00000001;
                 end
 				#30;
                 pc_out = pc;
                 pc_src_out = pc_src;
-				#20;
                 
             end
             ID: begin
+				# 50;
                 // calculate the ir fields and the control signals
                 opcode = ir[31:27];
                 instruction_type = ir[2:1];
@@ -176,9 +177,9 @@ module MCRP(input clk,reset,
                 immediate = ir[16:3];
                 offset = ir[26:3];
                 stop_bit = ir[0];  
-				#20;
+				#30;
                 // prepare branch address and jump address
-                JA = next_pc + extended_offset; // jump address
+                JA = pc + extended_offset; // jump address
                 BTA = next_pc + extended_immediate; // branch target address
 				#30;
                 ir_out = ir;
@@ -196,7 +197,8 @@ module MCRP(input clk,reset,
                 stack_read_out = stack_read; 
 				#20;
             end
-            EX: begin
+            EX: begin 
+				#30;
                 // fine the second alu operand
                 if (alu_src == 2'b00) begin
                     alu_second_operand = extended_immediate;
@@ -228,25 +230,23 @@ module MCRP(input clk,reset,
                             zero_signal = 1'b0;
                         end
                     end
-                end
-				#30;
+                end	
                 alu_result = alu_out;
                 zero_signal_out = zero_signal;
             end    
             MEM: begin
                 memory_address = alu_out; // set memory address
-				#100; // delay for read from memory operation.
+				#150; // delay for read from memory operation.
                 mem_result = mem_out; 
             end
-            WB: begin
-				#100; 
+            WB: begin 
                 if (wb_src == 1'b0) begin
                     wb_data = alu_out;
                 end
                 else if (wb_src == 1'b1) begin
                     wb_data = mem_out;
                 end
-				#50;
+				#20;
                 wb_result = wb_data;
             end
         endcase 
