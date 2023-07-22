@@ -11,7 +11,7 @@ module control_unit(input [1:0] instr_type, input [4:0] opcode,
 
     reg s4,s3,s2,s1,s0;
     always @(*)begin
-        reg_b = (opcode == 5'b00100 && instr_type == 2'b01) ? 1'b1 : 1'b0; // BEQ && I-type
+        reg_b = (opcode == 5'b00100 && instr_type == 2'b01) || (opcode == 5'b00011 && instr_type == 2'b01); // either BEQ && I-type or SW && I-Type
         reg_wr = (instr_type == 2'b00 && opcode != 5'b00011) || (instr_type == 2'b01 && opcode != 5'b00011 && opcode != 5'b00100) || (instr_type == 2'b11) ? 1'b1 : 1'b0;
         ext_op = ~(instr_type == 2'b01 && opcode == 5'b00000) ? 1'b1 : 1'b0; // ADDI && I-type
         s1 = (instr_type == 2'b11 && (opcode == 5'b00000 || opcode == 5'b00001))? 1'b1 : 1'b0;
